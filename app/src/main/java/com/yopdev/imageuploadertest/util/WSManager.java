@@ -104,6 +104,7 @@ public class WSManager {
             response.setHttpCode(408);
         }
 
+        response.setData(response.getBody());
         return response;
     }
 }
