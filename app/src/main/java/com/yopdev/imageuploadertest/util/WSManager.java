@@ -15,6 +15,7 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by sirkuryaki on 27/08/2018.
@@ -23,18 +24,12 @@ import okhttp3.RequestBody;
 public class WSManager {
 
     private static final MediaType JPG = MediaType.parse("image/jpeg");
-    private final static WSManager instance = new WSManager();
     private final String mAcceptLanguage;
+    private final Executor networkIO;
 
-
-    private WSManager() {
-        super();
+    public WSManager(Executor networkIO) {
+        this.networkIO = networkIO;
         mAcceptLanguage = Locale.getDefault().toString().replace("_", "-");
-    }
-
-    @NonNull
-    public static WSManager getInstance() {
-        return instance;
     }
 
     private OkHttpClient getNewHttpClient() {
@@ -48,12 +43,11 @@ public class WSManager {
     }
 
     @NonNull
-    public LiveData<WSResponse<Integer>> postImage(@NonNull Executor networkIO,
-                                                   @NonNull String url,
-                                                   @NonNull String applicationToken,
-                                                   @NonNull String accessToken,
-                                                   @NonNull String fileUri) {
-        return new LiveData<WSResponse<Integer>>() {
+    public LiveData<WSResponse<String>> postImage(@NonNull String url,
+                                                  @NonNull String applicationToken,
+                                                  @NonNull String accessToken,
+                                                  @NonNull String fileUri) {
+        return new LiveData<WSResponse<String>>() {
 
             final AtomicBoolean started = new AtomicBoolean(false);
 
@@ -69,14 +63,14 @@ public class WSManager {
     }
 
     @NonNull
-    private WSResponse<Integer> executeImageRequest(@NonNull String url,
-                                                    @NonNull String applicationToken,
-                                                    @NonNull String accessToken,
-                                                    @NonNull String fileUri) {
+    private WSResponse<String> executeImageRequest(@NonNull String url,
+                                                   @NonNull String applicationToken,
+                                                   @NonNull String accessToken,
+                                                   @NonNull String fileUri) {
 
         OkHttpClient httpclient = getNewHttpClient();
 
-        WSResponse<Integer> response = new WSResponse<>();
+        WSResponse<String> response = new WSResponse<>();
 
         File file = new File(fileUri);
 
@@ -97,7 +91,9 @@ public class WSManager {
             request.addHeader("Authorizationpostulante", accessToken);
 
             try {
-                response.setHttpCode(httpclient.newCall(request.build()).execute().code());
+                Response executed = httpclient.newCall(request.build()).execute();
+                response.setHttpCode(executed.code());
+                response.setBody(response.getHttpCode() + ": " + executed.body().string());
             } catch (IOException e) {
                 response.setBody(e.toString());
                 response.setHttpCode(408);
