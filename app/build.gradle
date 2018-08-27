@@ -14,6 +14,8 @@ android {
         versionName versioning.versionName()
 
         buildConfigField("String", "BASE_URL", "\"${credentials.url}\"")
+        buildConfigField("String", "USER_TOKEN", "\"${credentials.usertoken}\"")
+        buildConfigField("String", "APP_TOKEN", "\"${credentials.token}\"")
     }
     buildTypes {
         release {
