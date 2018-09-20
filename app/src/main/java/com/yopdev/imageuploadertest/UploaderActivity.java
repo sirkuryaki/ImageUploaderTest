@@ -46,6 +46,8 @@ public class UploaderActivity extends AppCompatActivity {
     private EditText mUrlView;
     private EditText mAppTokenView;
     private EditText mUserTokenView;
+    private EditText mFormDataPartName;
+    private EditText mFormDataFilename;
     private View mProgressView;
     private View mLoginFormView;
     private ImageView mUserAvatar;
@@ -86,7 +88,7 @@ public class UploaderActivity extends AppCompatActivity {
     };
 
     @SuppressLint("SimpleDateFormat")
-    public File createImageFile(Context context) throws IOException {
+    private File createImageFile(Context context) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -99,7 +101,7 @@ public class UploaderActivity extends AppCompatActivity {
     }
 
     @Nullable
-    public String getPath(@NonNull Context context, @NonNull Uri photoUri) {
+    private String getPath(@NonNull Context context, @NonNull Uri photoUri) {
 
         File newFile = null;
         InputStream pictureInputStream;
@@ -153,6 +155,8 @@ public class UploaderActivity extends AppCompatActivity {
         mAppTokenView = findViewById(R.id.app_token);
         mUserTokenView = findViewById(R.id.user_token);
         mLoginFormView = findViewById(R.id.login_form);
+        mFormDataFilename = findViewById(R.id.filename);
+        mFormDataPartName = findViewById(R.id.from_data_part);
         mProgressView = findViewById(R.id.login_progress);
         mOutput = findViewById(R.id.output);
 
@@ -254,8 +258,10 @@ public class UploaderActivity extends AppCompatActivity {
         String url = mUrlView.getText().toString();
         String accessToken = mAppTokenView.getText().toString();
         String clientToken = mUserTokenView.getText().toString();
+        String partName = mFormDataPartName.getText().toString();
+        String filename = mFormDataFilename.getText().toString();
 
-        LiveData<WSResource<String>> resourceLiveData = viewModel.uploadImage(url, accessToken, clientToken);
+        LiveData<WSResource<String>> resourceLiveData = viewModel.uploadImage(url, accessToken, clientToken, partName, filename);
 
 
         if (resourceLiveData == null) {

@@ -26,18 +26,20 @@ public class UploaderViewModel extends AndroidViewModel {
     }
 
     @Nullable
-    public String getPhotoPath() {
+    String getPhotoPath() {
         return photoPath.getValue();
     }
 
-    public void setPhotoPath(@Nullable String path) {
+    void setPhotoPath(@Nullable String path) {
         photoPath.setValue(path);
     }
 
     @Nullable
-    public LiveData<WSResource<String>> uploadImage(@NonNull String url,
-                                                    @NonNull String applicationToken,
-                                                    @NonNull String accessToken) {
+    LiveData<WSResource<String>> uploadImage(@NonNull String url,
+                                             @NonNull String applicationToken,
+                                             @NonNull String accessToken,
+                                             @NonNull String formDataPartName,
+                                             @NonNull String formDataFilename) {
 
         String fileUri = photoPath.getValue();
 
@@ -51,7 +53,7 @@ public class UploaderViewModel extends AndroidViewModel {
             @NonNull
             @Override
             protected LiveData<WSResponse<String>> createCall() {
-                return application.getWsManager().postImage(url, applicationToken, accessToken, fileUri);
+                return application.getWsManager().postImage(url, applicationToken, accessToken, fileUri, formDataPartName, formDataFilename);
             }
         }.asLiveData();
     }

@@ -18,5 +18,7 @@
     <string name="uploader_activity_request_output">Result: %s</string>
 
     <string name="error_field_required">This field is required</string>
+    <string name="form_data_part_name">form data part</string>
+    <string name="filename">filename</string>
 
 </resources>

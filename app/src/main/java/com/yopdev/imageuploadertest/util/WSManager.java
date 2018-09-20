@@ -46,7 +46,9 @@ public class WSManager {
     public LiveData<WSResponse<String>> postImage(@NonNull String url,
                                                   @NonNull String applicationToken,
                                                   @NonNull String accessToken,
-                                                  @NonNull String fileUri) {
+                                                  @NonNull String fileUri,
+                                                  @NonNull String formDataPartName,
+                                                  @NonNull String formDataFilename) {
         return new LiveData<WSResponse<String>>() {
 
             final AtomicBoolean started = new AtomicBoolean(false);
@@ -56,7 +58,7 @@ public class WSManager {
 
                 super.onActive();
                 if (started.compareAndSet(false, true)) {
-                    networkIO.execute(() -> postValue(executeImageRequest(url, applicationToken, accessToken, fileUri)));
+                    networkIO.execute(() -> postValue(executeImageRequest(url, applicationToken, accessToken, fileUri, formDataPartName, formDataFilename)));
                 }
             }
         };
@@ -66,7 +68,9 @@ public class WSManager {
     private WSResponse<String> executeImageRequest(@NonNull String url,
                                                    @NonNull String applicationToken,
                                                    @NonNull String accessToken,
-                                                   @NonNull String fileUri) {
+                                                   @NonNull String fileUri,
+                                                   @NonNull String formDataPartName,
+                                                   @NonNull String formDataFilename) {
 
         OkHttpClient httpclient = getNewHttpClient();
 
@@ -79,7 +83,7 @@ public class WSManager {
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("content", "android_foto", bodyImage)
+                    .addFormDataPart(formDataPartName, formDataFilename, bodyImage)
                     .build();
 
             Request.Builder request = new Request.Builder()
