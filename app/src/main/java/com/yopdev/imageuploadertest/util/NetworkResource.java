@@ -30,6 +30,8 @@ public abstract class NetworkResource<RequestType> {
             //noinspection ConstantConditions
             if (response.isSuccess()) {
                 result.postValue(WSResource.success(response.getData(), null));
+            } else if (response.isTimeout()) {
+                result.postValue(WSResource.timeout("Timeout: Your network is slow"));
             } else {
                 result.postValue(WSResource.error(response.getBody(), response.data, null));
             }

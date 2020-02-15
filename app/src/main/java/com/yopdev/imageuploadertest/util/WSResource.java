@@ -57,6 +57,11 @@ public class WSResource<T> {
         return new WSResource<>(Status.LOADING, data, null, null);
     }
 
+    public static <T> WSResource<T> timeout(String msg) {
+        return new WSResource<>(Status.TIMEOUT, null, msg, null);
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

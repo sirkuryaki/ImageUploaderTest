@@ -16,11 +16,11 @@ public class WSResult {
     public static final int SUCCESS = 1;
     public static final int FAILURE = 2;
     public static final int OFFLINE = 3;
+    public static final int TIMEOUT = 4;
 
     @Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SUCCESS, FAILURE, OFFLINE
-    })
+    @IntDef({SUCCESS, FAILURE, OFFLINE, TIMEOUT})
 
     public @interface WSResultInterface {
     }
