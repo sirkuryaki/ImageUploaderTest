@@ -2,7 +2,12 @@ package com.yopdev.imageuploadertest.util;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+
+import com.yopdev.imageuploadertest.Config;
 
 import java.net.HttpURLConnection;
 
@@ -48,7 +53,7 @@ public class WSResponse<T> {
     }
 
     public boolean isOffline() {
-        return httpCode == HTTP_NOT_FOUND;
+        return !isNetworkAvailable();
     }
 
     public boolean isTimeout() {
@@ -82,5 +87,17 @@ public class WSResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+//    https://stackoverflow.com/a/30343108/5279996
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) Config.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Network is present and connected
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 }

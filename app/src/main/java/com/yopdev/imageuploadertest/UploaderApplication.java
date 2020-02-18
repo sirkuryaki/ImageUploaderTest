@@ -20,6 +20,7 @@ public class UploaderApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Config.context = this;
         networkExecutor = Executors.newFixedThreadPool(3);
     }
 
