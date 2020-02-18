@@ -2,9 +2,11 @@ package com.yopdev.imageuploadertest.util;
 
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,8 @@ public class WSManager {
     private static final MediaType JPG = MediaType.parse("image/jpeg");
     private final String mAcceptLanguage;
     private final Executor networkIO;
+    private final OkHttpClient httpclient = getNewHttpClient();
+
 
     public WSManager(Executor networkIO) {
         this.networkIO = networkIO;
@@ -34,9 +38,9 @@ public class WSManager {
 
     private OkHttpClient getNewHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .followRedirects(false);
 
         return builder.build();
@@ -72,8 +76,6 @@ public class WSManager {
                                                    @NonNull String formDataPartName,
                                                    @NonNull String formDataFilename) {
 
-        OkHttpClient httpclient = getNewHttpClient();
-
         WSResponse<String> response = new WSResponse<>();
 
         File file = new File(fileUri);
@@ -100,12 +102,12 @@ public class WSManager {
                 response.setBody(response.getHttpCode() + ": " + executed.body().string());
             } catch (IOException e) {
                 response.setBody(e.toString());
-                response.setHttpCode(408);
+                response.setHttpCode(HttpURLConnection.HTTP_CLIENT_TIMEOUT);
             }
 
         } catch (OutOfMemoryError error) {
             response.setBody("OutOfMemoryError");
-            response.setHttpCode(408);
+            response.setHttpCode(HttpURLConnection.HTTP_CLIENT_TIMEOUT);
         }
 
         response.setData(response.getBody());

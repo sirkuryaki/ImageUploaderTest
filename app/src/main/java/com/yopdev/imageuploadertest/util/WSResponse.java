@@ -2,7 +2,19 @@ package com.yopdev.imageuploadertest.util;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+
+import com.yopdev.imageuploadertest.Config;
+
+import java.net.HttpURLConnection;
+
+import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Created by sirkuryaki on 27/08/2018.
@@ -37,8 +49,17 @@ public class WSResponse<T> {
     }
 
     public boolean isSuccess() {
-        return httpCode >= 200 && httpCode < 300;
+        return httpCode >= HTTP_OK && httpCode < HTTP_MULT_CHOICE;
     }
+
+    public boolean isOffline() {
+        return !isNetworkAvailable();
+    }
+
+    public boolean isTimeout() {
+        return httpCode == HTTP_CLIENT_TIMEOUT;
+    }
+
 
     @SuppressLint("DefaultLocale")
     @Override
@@ -49,12 +70,15 @@ public class WSResponse<T> {
     @NonNull
     @WSResult.WSResultInterface
     public Integer getResult() {
-
-        if (httpCode == 408) {
+        if (isSuccess()) {
+            return WSResult.SUCCESS;
+        } else if (isOffline()) {
             return WSResult.OFFLINE;
+        } else if (isTimeout()) {
+            return WSResult.TIMEOUT;
+        } else {
+            return WSResult.FAILURE;
         }
-
-        return httpCode >= 200 && httpCode < 300 ? WSResult.SUCCESS : WSResult.FAILURE;
     }
 
     public T getData() {
@@ -63,5 +87,17 @@ public class WSResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+//    https://stackoverflow.com/a/30343108/5279996
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) Config.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Network is present and connected
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 }

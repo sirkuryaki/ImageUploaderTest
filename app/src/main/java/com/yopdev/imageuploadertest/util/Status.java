@@ -27,5 +27,6 @@ package com.yopdev.imageuploadertest.util;
 public enum Status {
     SUCCESS,
     ERROR,
-    LOADING
+    LOADING,
+    TIMEOUT
 }
